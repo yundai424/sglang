@@ -418,6 +418,8 @@ class ModelRunner:
             weights = torch.empty(shape, dtype=target_dtype, device=self.device)
             torch.distributed.broadcast(weights, src=0, group=self._model_update_group)
             self.model.load_weights([(name, weights)])
+            del weights
+            gc.collect()
             return True, f"Succeeded to update parameter {name} online."
 
         except Exception as e:
