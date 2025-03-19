@@ -160,6 +160,7 @@ class LlamaAttention(nn.Module):
             rope_scaling=rope_scaling,
             is_neox_style=rope_is_neox_style,
         )
+        
         self.attn = RadixAttention(
             self.num_heads,
             self.head_dim,
@@ -167,6 +168,7 @@ class LlamaAttention(nn.Module):
             num_kv_heads=self.num_kv_heads,
             layer_id=layer_id,
             prefix=add_prefix("attn", prefix),
+            quant_config=quant_config,
         )
 
     def forward(

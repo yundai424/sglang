@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import torch
 from torch.nn.parameter import Parameter
 
-from sglang.srt.layers.attention.base_attn_backend import AttentionBackend
+from sglang.srt.layers.radix_attention import RadixAttention
 from sglang.srt.layers.linear import LinearBase, LinearMethodBase
 from sglang.srt.layers.parameter import ModelWeightParameter, PerTensorScaleParameter
 from sglang.srt.layers.quantization.base_config import (
@@ -78,7 +78,7 @@ class ModelOptFp8Config(QuantizationConfig):
 
         if isinstance(layer, LinearBase):
             return ModelOptFp8LinearMethod(self)
-        if isinstance(layer, AttentionBackend):
+        if isinstance(layer, RadixAttention):
             return ModelOptFp8KVCacheMethod(self)
 
         return None

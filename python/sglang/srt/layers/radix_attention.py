@@ -13,8 +13,11 @@
 # ==============================================================================
 """Radix attention."""
 
+from typing import Optional
 from torch import nn
 
+from sglang.srt.layers.linear import UnquantizedLinearMethod
+from sglang.srt.layers.quantization.base_config import QuantizationConfig
 from sglang.srt.model_executor.forward_batch_info import ForwardBatch
 
 
@@ -35,6 +38,7 @@ class RadixAttention(nn.Module):
         sliding_window_size: int = -1,
         is_cross_attention: bool = False,
         prefix: str = "",
+        quant_config: Optional[QuantizationConfig] = None,
     ):
         super().__init__()
         self.tp_q_head_num = num_heads
@@ -50,6 +54,13 @@ class RadixAttention(nn.Module):
         self.is_cross_attention = is_cross_attention
         self.k_scale = None
         self.v_scale = None
+        if quant_config is not None:
+            self.quant_method = quant_config.get_quant_method(self, prefix=prefix)
+        else:
+            self.quant_method = UnquantizedLinearMethod()
+
+        assert self.quant_method is not None
+        self.quant_method.create_weights(self)
 
     def forward(
         self,
